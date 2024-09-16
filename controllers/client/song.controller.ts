@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Topic from "../../models/topic.model";
 import Song from "../../models/song.model";
 import Singer from "../../models/singer.model";
+import FavoriteSong from "../../models/favorite-song.model";
 // [GET] /songs/:slugTopic
 export const list = async (req: Request, res: Response) => {
   const slugTopic: string = req.params.slugTopic;
@@ -44,6 +45,14 @@ export const detail = async (req: Request, res: Response) => {
   const topic = await Topic.findOne({
     _id: song.topicId
   }).select("title");
+  const existSongInFavorite = await FavoriteSong.findOne({
+    // userId: res.locals.user.id,
+    songId: song.id
+  });
+
+  if (existSongInFavorite) {
+    song["isFavorite"] = true;
+  }
   res.render("client/pages/songs/detail", {
     pageTitle: "Chi tiết bài hát",
     song: song,
@@ -76,5 +85,26 @@ export const like = async (req: Request, res: Response) => {
     code: 200,
     updateLike: updateLike,
     message: " Cập nhật thành công!"
+  });
+};
+// [PATCH] /songs/favorite
+export const favorite = async (req: Request, res: Response) => {
+  const { id } = req.body;
+  const data = {
+    // userId: res.locals.user.id,
+    songId: id
+  }
+  const existSongInFavorite = await FavoriteSong.findOne(data);
+  let status = "";
+  if (existSongInFavorite) {
+    await FavoriteSong.deleteOne(data);
+  } else {
+    const record = new FavoriteSong(data);
+    await record.save();
+    status = "add";
+  }
+  res.json({
+    code: 200,
+    status: status
   });
 };
