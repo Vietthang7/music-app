@@ -50,4 +50,31 @@ export const detail = async (req: Request, res: Response) => {
     singer: singer,
     topic: topic
   });
+}
+// [PATCH] /songs/like
+export const like = async (req: Request, res: Response) => {
+  const { id, type } = req.body;
+  const song = await Song.findOne({
+    _id: id,
+    status: "active",
+    deleted: false
+  })
+  let updateLike = song.like;
+  if (type == "like") {
+    updateLike = updateLike + 1;
+  } else if (type == "dislike") {
+    updateLike = updateLike - 1;
+  }
+  await Song.updateOne({
+    _id: id,
+    status: "active",
+    deleted: false
+  }, {
+    like: updateLike
+  });
+  res.json({
+    code: 200,
+    updateLike: updateLike,
+    message: " Cập nhật thành công!"
+  });
 };

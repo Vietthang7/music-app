@@ -1,6 +1,6 @@
 // APlayer
 const aplayer = document.getElementById('aplayer');
-if(aplayer) {
+if (aplayer) {
   let dataSong = aplayer.getAttribute("data-song");
   dataSong = JSON.parse(dataSong);
 
@@ -34,3 +34,37 @@ if(aplayer) {
   });
 }
 // End APlayer
+
+// Like
+const buttonLike = document.querySelector("[button-like]");
+if (buttonLike) {
+  buttonLike.addEventListener("click", () => {
+    const id = buttonLike.getAttribute("button-like");
+    const data = {
+      id: id
+    };
+    if (buttonLike.classList.contains("active")) {
+      buttonLike.classList.remove("active");
+      data.type = "dislike";
+    } else {
+      buttonLike.classList.add("active");
+      data.type = "like";
+    }
+    fetch("/songs/like", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.code == 200) {
+          const innerNumber = buttonLike.querySelector(".inner-number");
+          innerNumber.innerHTML = data.updateLike;
+        }
+      })
+  })
+
+}
+// End Like
