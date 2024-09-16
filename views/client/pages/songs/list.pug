@@ -1,15 +1,15 @@
 extends ../../layouts/default.pug
 include ../../mixins/box-head.pug
 
-block main 
+block main
   .container.my-3
     .row
       .col-12
         +box-head(pageTitle)
-    
+
     if(songs.length > 0)
       .row
-        each item in songs 
+        each item in songs
           .col-6.mb-3
             div(class="song-item")
               div(class="inner-image")
