@@ -127,3 +127,27 @@ export const favorite = async (req: Request, res: Response) => {
     songs: songs
   });
 };
+// [GET] /songs/search
+export const search = async (req: Request, res: Response) => {
+  const keyword = `${req.query.keyword}`;
+  let songs = [];
+  if (keyword) {
+    const regex = new RegExp(keyword, "i");
+    songs = await Song.find({
+      title: regex,
+      status: "active",
+      deleted: false
+    }).select("title avatar singerId like slug");
+    for (const item of songs) {
+      const singerInfo = await Singer.findOne({
+        _id: item.singerId
+      }).select("fullName");
+      item["singerFullName"] = singerInfo["fullName"];
+    }
+  }
+  res.render("client/pages/songs/list", {
+    pageTitle: "Kết quả tìm kiếm: " + keyword,
+    keyword: keyword,
+    songs: songs
+  });
+};
