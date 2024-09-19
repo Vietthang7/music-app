@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import unidecode from "unidecode";
 import Topic from "../../models/topic.model";
 import Song from "../../models/song.model";
 import Singer from "../../models/singer.model";
@@ -132,9 +133,26 @@ export const search = async (req: Request, res: Response) => {
   const keyword = `${req.query.keyword}`;
   let songs = [];
   if (keyword) {
-    const regex = new RegExp(keyword, "i");
+    let keywordSlug = keyword.trim();
+    keywordSlug = keywordSlug.replace(/\s/g, "-");
+    // Thay thế tất cả các khoảng trắng bằng dấu gạch ngang. 
+    keywordSlug = keywordSlug.replace(/\-+/g, "-");
+    // Loại bỏ các dấu gạch ngang liên tiếp.
+    keywordSlug = unidecode(keywordSlug);
+    // Chuẩn hóa các ký tự đặc biệt thành dạng ASCII.
+    console.log(keyword);
+    console.log(keywordSlug);
+    const regexKeyword = new RegExp(keyword, "i");
+    const regexKeywordSlug = new RegExp(keywordSlug, "i");
     songs = await Song.find({
-      title: regex,
+      $or: [
+        {
+          title: regexKeyword
+        },
+        {
+          slug: regexKeywordSlug
+        }
+      ],
       status: "active",
       deleted: false
     }).select("title avatar singerId like slug");
