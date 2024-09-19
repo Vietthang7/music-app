@@ -3,10 +3,9 @@ const router = express.Router();
 import * as controller from "../../controllers/client/song.controller";
 
 
-router.get("/:slugTopic", controller.list);
+router.get("/topic/:slugTopic", controller.list);
 router.get("/detail/:slugSong", controller.detail);
 router.patch("/like", controller.like);
-router.patch("/favorite", controller.favorite);
-
-
+router.patch("/favorite", controller.favoritePatch);
+router.get("/favorite", controller.favorite);
 export const songRoute = router;
