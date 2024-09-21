@@ -4,6 +4,7 @@ import Topic from "../../models/topic.model";
 import Song from "../../models/song.model";
 import Singer from "../../models/singer.model";
 import FavoriteSong from "../../models/favorite-song.model";
+import { title } from "process";
 // [GET] /songs/:slugTopic
 export const list = async (req: Request, res: Response) => {
   const slugTopic: string = req.params.slugTopic;
@@ -128,10 +129,14 @@ export const favorite = async (req: Request, res: Response) => {
     songs: songs
   });
 };
-// [GET] /songs/search
+// [GET] /songs/search/:type
 export const search = async (req: Request, res: Response) => {
+  const type = req.params.type;
+  // console.log(type);
   const keyword = `${req.query.keyword}`;
-  let songs = [];
+  // Khi muốn res.json({}) ra ngoài 1 object và thêm vài trường vào object thì sẽ không json ra cho FE được , bạn cần
+  // phải tạo ra 1 object mới và add những trường dữ liệu cần thiết vào object đó
+  let songsFinal = [];
   if (keyword) {
     let keywordSlug = keyword.trim();
     keywordSlug = keywordSlug.replace(/\s/g, "-");
@@ -140,11 +145,11 @@ export const search = async (req: Request, res: Response) => {
     // Loại bỏ các dấu gạch ngang liên tiếp.
     keywordSlug = unidecode(keywordSlug);
     // Chuẩn hóa các ký tự đặc biệt thành dạng ASCII.
-    console.log(keyword);
-    console.log(keywordSlug);
+    // console.log(keyword);
+    // console.log(keywordSlug);
     const regexKeyword = new RegExp(keyword, "i");
     const regexKeywordSlug = new RegExp(keywordSlug, "i");
-    songs = await Song.find({
+    const songs = await Song.find({
       $or: [
         {
           title: regexKeyword
@@ -160,12 +165,31 @@ export const search = async (req: Request, res: Response) => {
       const singerInfo = await Singer.findOne({
         _id: item.singerId
       }).select("fullName");
-      item["singerFullName"] = singerInfo["fullName"];
+      const itemFinal = {
+        title: item.title,
+        avatar: item.avatar,
+        singerId: item.singerId,
+        like: item.like,
+        slug: item.slug,
+        singerFullName: singerInfo["fullName"],
+      };
+      songsFinal.push(itemFinal);
     }
   }
-  res.render("client/pages/songs/list", {
-    pageTitle: "Kết quả tìm kiếm: " + keyword,
-    keyword: keyword,
-    songs: songs
-  });
+  if (type == "result") {
+    res.render("client/pages/songs/list", {
+      pageTitle: "Kết quả tìm kiếm: " + keyword,
+      keyword: keyword,
+      songs: songsFinal
+    });
+  } else if (type == "suggest") {
+    res.json({
+      code: 200,
+      songs: songsFinal
+    })
+  } else {
+    res.json({
+      code: 400
+    })
+  };
 };
