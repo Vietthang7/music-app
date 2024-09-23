@@ -2,7 +2,7 @@ import { Request, response, Response } from "express";
 import Song from "../../models/song.model";
 import Topic from "../../models/topic.model";
 import Singer from "../../models/singer.model";
-
+import { systemConfig } from "../../config/system";
 //[GET]/admin/songs
 export const index = async (req: Request, res: Response) => {
   const songs = await Song.find({
@@ -27,4 +27,10 @@ export const create = async (req: Request, res: Response) => {
     topics: topics,
     singers: singers
   });
+};
+// [POST] /admin/songs/create
+export const createPost = async (req: Request, res: Response) => {
+  const song = new Song(req.body);
+  await song.save();
+  res.redirect(`/${systemConfig.prefixAdmin}/songs`);
 };
