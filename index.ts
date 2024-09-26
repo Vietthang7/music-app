@@ -2,6 +2,10 @@ import express, { Express } from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 dotenv.config();
+import flash from 'express-flash';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import methodOverride from 'method-override';
 import { connectDatabase } from "./config/database";
 import { routesAdmin } from "./routes/admin";
 connectDatabase();
@@ -13,6 +17,12 @@ const port: number | string = process.env.PORT || 3000;
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
+//Flash
+app.use(cookieParser('HHKALKS'));
+app.use(session({ cookie: { maxAge: 60000 } }));
+app.use(flash());
+//End Flash
+app.use(methodOverride('_method'));
 // parse application/json
 app.use(bodyParser.json());
 app.use(express.static(`${__dirname}/public`));

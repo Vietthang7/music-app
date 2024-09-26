@@ -25,6 +25,7 @@
   background: orange;
   padding: 6px;
   border-radius: 8px;
+  margin-bottom: 10px;
 }
 
 .header .inner-menu>ul>li:hover {
