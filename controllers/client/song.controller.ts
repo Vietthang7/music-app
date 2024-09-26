@@ -197,7 +197,6 @@ export const search = async (req: Request, res: Response) => {
 // [GET] /songs/listen/:id
 export const listen = async (req: Request, res: Response) => {
   const id = req.params.id;
-  console.log("gửi dữ liệu");
   const song = await Song.findOne({
     _id: id,
     status: "active",

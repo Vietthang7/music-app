@@ -24,60 +24,35 @@ if (aplayer) {
 
   const avatar = document.querySelector(".singer-detail .inner-avatar");
   // const avatar2 = document.querySelector(".aplayer .aplayer-pic");
-  let listenThreshold;
-  let isPause = false;
-  let hasListenedEnough = false;
-  let listenDuration = 0; // Biến để theo dõi thời gian đã nghe
-  let tua = false;
-  let ok = true;
+
+  let timeOutListen;
+
+
+
   ap.on('play', function () {
-    listenThreshold = (ap.audio.duration * 1) / 15;
-    if (tua == false && ap.audio.currentTime >= listenThreshold) {
-      console.log("....");
-      fetch(`/songs/listen/${dataSong._id}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.code == 200) {
-            const innerNumberListen = document.querySelector(".singer-detail .inner-listen .inner-number");
-            innerNumberListen.innerHTML = data.listen;
-          }
-        });
-    } else if (tua && ok) {
-      fetch(`/songs/listen/${dataSong._id}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.code == 200) {
-            const innerNumberListen = document.querySelector(".singer-detail .inner-listen .inner-number");
-            innerNumberListen.innerHTML = data.listen;
-          }
-        });
-    }
     avatar.style.animationPlayState = "running";
+    // avatar2.style.animationPlayState = "running";
   });
 
-
-  ap.on('seeked', function () {
-    tua = true;
-    console.log("chay vao day");
-    if (ap.audio.duration - ap.audio.currentTime < (ap.audio.duration * 1) / 15) {
-      ok = false;
-    }
+  ap.on('canplay', function () {
+    timeOutListen = ap.audio.duration * 4 / 5 * 1000;
   });
+  setTimeout(() => {
+    setTimeout(() => {
+      ap.on('ended', function () {
+        fetch(`/songs/listen/${dataSong._id}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.code == 200) {
+              const innerNumberListen = document.querySelector(".singer-detail .inner-listen .inner-number");
+              innerNumberListen.innerHTML = data.listen;
+            }
+          })
+      });
+    }, timeOutListen);
+  }, 1000);
 
-  // ap.on('ended', function () {
-  //   console.log(hasListenedEnough);
-  //   // Gửi yêu cầu tăng lượt nghe chỉ nếu đã nghe đủ lâu  
-  //   if (hasListenedEnough) {
-  //     fetch(`/songs/listen/${dataSong._id}`)
-  //       .then(res => res.json())
-  //       .then(data => {
-  //         if (data.code == 200) {
-  //           const innerNumberListen = document.querySelector(".singer-detail .inner-listen .inner-number");
-  //           innerNumberListen.innerHTML = data.listen;
-  //         }
-  //       });
-  //   }
-  // });
+
   ap.on('pause', function () {
     avatar.style.animationPlayState = "paused";
   });
@@ -155,7 +130,6 @@ if (boxSearch) {
   const inputSearch = boxSearch.querySelector(`input[name="keyword"]`);
   inputSearch.addEventListener("keyup", () => {
     const keyword = inputSearch.value;
-    // console.log(keyword);
     fetch(`/songs/search/suggest?keyword=${keyword}`)
       .then(res => res.json())
       .then(data => {
