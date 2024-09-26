@@ -9,12 +9,14 @@ if (aplayer) {
 
   const ap = new APlayer({
     container: aplayer,
+    lrcType: 1,
     audio: [
       {
         name: dataSong.title,
         artist: dataSinger.fullName,
         url: dataSong.audio,
-        cover: dataSong.avatar
+        cover: dataSong.avatar,
+        lrc: dataSong.lyrics
       }
     ],
     autoplay: true
@@ -28,7 +30,7 @@ if (aplayer) {
   let listenDuration = 0; // Biến để theo dõi thời gian đã nghe
   let tua = false;
   let ok = true;
-  ap.on('play', function () { console.log(".....sjhds");
+  ap.on('play', function () {
     listenThreshold = (ap.audio.duration * 1) / 15;
     if (tua == false && ap.audio.currentTime >= listenThreshold) {
       console.log("....");
