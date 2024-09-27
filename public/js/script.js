@@ -161,50 +161,47 @@ if (boxSearch) {
   })
 }
 
-// End Box gợi ý tìm kiếm
-// let listenThreshold;
-// let isPaused = false;
-// let hasListenedEnough = false;
-// let listenedDuration = 0; // Biến để theo dõi thời gian đã nghe
+// Lấy các phần tử liên quan đến việc hiện/ẩn mật khẩu  
+const togglePasswordVisibility = document.querySelector("[togglePassword]"); // Nut hoặc biểu tượng để hiện/ẩn mật khẩu 
+const togglePasswordVisibilityConfirm = document.querySelector("[togglePasswordConfirm]"); // Nut hoặc biểu tượng để hiện/ẩn mật khẩu 
+const passwordInput = document.querySelector("input[name='password']"); // Input cho mật khẩu 
+const confirmPasswordInput = document.querySelector("input[name='confirmpassword']");
 
-// ap.on('play', function () {
-//     avatar.style.animationPlayState = "running";
-//     listenThreshold = (ap.audio.duration * 2) / 3; // Tính thời gian 2/3 bài hát mỗi khi bài hát bắt đầu
-//     if (!isPaused) { // Chỉ thiết lập lại khi không bị tạm dừng
-//         hasListenedEnough = false; // Đặt lại trạng thái nghe đủ mỗi lần phát lại
-//     }
-//     isPaused = false; // Đánh dấu là đang phát
-// });
+if (togglePasswordVisibility && passwordInput) {
+  togglePasswordVisibility.addEventListener("click", () => {
+    let newType = "";
+    const type = passwordInput.getAttribute("type");
+    if (type === "password") {
+      newType = "text";
+    } else {
+      newType = "password";
+    }
+    passwordInput.setAttribute("type", newType);
 
-// ap.on('timeupdate', function () {
-//     listenedDuration = ap.audio.currentTime; // Cập nhật thời gian đã nghe
-//     if (listenedDuration >= listenThreshold) {
-//         hasListenedEnough = true; // Đánh dấu là đã nghe đủ
-//     }
-// });
+    // Thay đổi biểu tượng nếu cần (giả sử bạn có hai biểu tượng khác nhau cho hiện và ẩn)  
+    if (newType === "password") {
+      togglePasswordVisibility.innerHTML = `<i class="fa-solid fa-eye-slash"></i>`
+    } else {
+      togglePasswordVisibility.innerHTML = `<i class="fa-solid fa-eye"></i>`
+    }
+  });
+}
+if (togglePasswordVisibilityConfirm && confirmPasswordInput) {
+  togglePasswordVisibilityConfirm.addEventListener("click", () => {
+    let newType = "";
+    const type = confirmPasswordInput.getAttribute("type");
+    if (type === "password") {
+      newType = "text";
+    } else {
+      newType = "password";
+    }
+    confirmPasswordInput.setAttribute("type", newType);
 
-// ap.on('ended', function () {
-//     // Gửi yêu cầu tăng lượt nghe chỉ nếu đã nghe đủ lâu
-//     if (hasListenedEnough) {
-//         fetch(`/songs/listen/${dataSong._id}`)
-//             .then(res => res.json())
-//             .then(data => {
-//                 if (data.code == 200) {
-//                     const innerNumberListen = document.querySelector(".singer-detail .inner-listen .inner-number");
-//                     innerNumberListen.innerHTML = data.listen;
-//                 }
-//             });
-//     }
-// });
-
-// ap.on('pause', function () {
-//     avatar.style.animationPlayState = "paused";
-//     isPaused = true; // Cập nhật trạng thái pause
-// });
-
-// ap.on('seeked', function () {
-//     // Kiểm tra nếu người dùng đã nghe đủ trước khi tua
-//     if (listenedDuration < listenThreshold) {
-//         hasListenedEnough = false; // Đặt lại nếu chưa nghe đủ
-//     }
-// });
+    if (newType === "password") {
+      togglePasswordVisibilityConfirm.innerHTML = `<i class="fa-solid fa-eye-slash"></i>`
+    } else {
+      togglePasswordVisibilityConfirm.innerHTML = `<i class="fa-solid fa-eye"></i>`
+    }
+  });
+}
+//  End Lấy các phần tử liên quan đến việc hiện/ẩn mật khẩu
