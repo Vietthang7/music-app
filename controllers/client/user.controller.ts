@@ -82,3 +82,9 @@ export const logout = async (req: Request, res: Response) => {
   res.clearCookie("tokenUser");
   res.redirect("/user/login");
 };
+//[GET] /user/profile
+export const profile = async (req: Request, res: Response) => {
+  res.render("client/pages/user/profile", {
+    pageTitle: "Thông tin cá nhân"
+  });
+};
