@@ -9,7 +9,7 @@ export const register = async (req: Request, res: Response) => {
   });
 };
 //[POST] /user/register
-export const registerPost = async (req, res: Response) => {
+export const registerPost = async (req: Request, res: Response) => {
   const existUser = await User.findOne({
     email: req.body.email,
     deleted: false
@@ -44,7 +44,7 @@ export const login = async (req: Request, res: Response) => {
   });
 };
 //[POST] /user/login
-export const loginPost = async (req, res: Response) => {
+export const loginPost = async (req: Request, res: Response) => {
   const user = await User.findOne({
     email: req.body.email,
     deleted: false
