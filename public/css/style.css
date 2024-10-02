@@ -362,3 +362,25 @@
   margin-bottom: 2px;
 }
 /* End box-search */
+/* image-preview */
+.image-preview {
+  width: 150px;
+  height: auto;
+  margin-top: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+/* image-preview */
+
+/* show-alert */
+.show-alert {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  z-index: 999;
+}
+
+.show-alert.hidden {
+  display: none;
+}
+/* End show-alert */

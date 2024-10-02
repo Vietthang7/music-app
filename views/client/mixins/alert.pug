@@ -1,11 +1,11 @@
 //- mixin alert-success(time)
-//-   - if (messages.success)
+//-   - if (messages.success.length && messages)
 //-     div(
 //-       class="alert alert-success show-alert"
 //-       show-alert=time
 //-     ) #{messages.success}
 //- mixin alert-error(time)
-//-   - if (messages.error)
+//-   - if (messages.error.length && messages)
 //-     div(
 //-       class="alert alert-danger show-alert"
 //-       show-alert=time

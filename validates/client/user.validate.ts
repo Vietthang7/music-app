@@ -1,5 +1,5 @@
 import { Response, Request, NextFunction } from "express";
-export const infoUser = async (req, res: Response, next: NextFunction) => {
+export const infoUser = async (req:Request, res: Response, next: NextFunction) => {
   if (!req.body.fullName) {
     req.flash("error", "Vui lòng điền đầy đủ họ tên!");
     res.redirect("back");
@@ -12,7 +12,7 @@ export const infoUser = async (req, res: Response, next: NextFunction) => {
   }
   next();
 }
-export const Register = async (req, res: Response, next: NextFunction) => {
+export const Register = async (req:Request, res: Response, next: NextFunction) => {
   if (!req.body.fullName) {
     req.flash("error", "Vui lòng điền đầy đủ họ tên !");
     res.redirect("back");
@@ -36,7 +36,7 @@ export const Register = async (req, res: Response, next: NextFunction) => {
   }
   next();
 }
-export const editPatch = async (req, res: Response, next: NextFunction) => {
+export const editPatch = async (req:Request, res: Response, next: NextFunction) => {
   if (!req.body.fullName) {
     req.flash("error", "Vui lòng điền đầy đủ họ tên !");
     res.redirect("back");
