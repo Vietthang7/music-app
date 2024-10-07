@@ -67,13 +67,6 @@ if (buttonLike) {
     const data = {
       id: id
     };
-    if (buttonLike.classList.contains("active")) {
-      buttonLike.classList.remove("active");
-      data.type = "dislike";
-    } else {
-      buttonLike.classList.add("active");
-      data.type = "like";
-    }
     fetch("/songs/like", {
       method: "PATCH",
       headers: {
@@ -81,13 +74,38 @@ if (buttonLike) {
       },
       body: JSON.stringify(data)
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          // Nếu phản hồi không thành công, ném lỗi  
+
+          return res.json().then(data => {
+            throw new Error(data.message); // Ném ra thông báo lỗi  
+          });
+        }
+        return res.json();
+      })
       .then(data => {
         if (data.code == 200) {
+          if (buttonLike.classList.contains("active")) {
+            buttonLike.classList.remove("active");
+            data.type = "dislike";
+          } else {
+            buttonLike.classList.add("active");
+            data.type = "like";
+          }
           const innerNumber = buttonLike.querySelector(".inner-number");
           innerNumber.innerHTML = data.updateLike;
         }
       })
+      .catch(error => {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: error.message,
+          showConfirmButton: false,
+          timer: 1000
+        });
+      });
   })
 
 }
@@ -108,7 +126,16 @@ if (listbuttonFavorite.length > 0) {
           id: id
         })
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            // Nếu phản hồi không thành công, ném lỗi  
+
+            return res.json().then(data => {
+              throw new Error(data.message); // Ném ra thông báo lỗi  
+            });
+          }
+          return res.json();
+        })
         .then(data => {
           if (data.code == 200) {
             if (data.status == "add") {
@@ -118,6 +145,15 @@ if (listbuttonFavorite.length > 0) {
             }
           }
         })
+        .catch(error => {
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: error.message,
+            showConfirmButton: false,
+            timer: 700
+          });
+        });
     })
   })
 }

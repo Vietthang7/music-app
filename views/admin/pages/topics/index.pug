@@ -40,15 +40,17 @@ block main
                 td #{item.title}
                 td
                   if (item.status === "active")
-                    a(
-                      href="javascript:;"
+                    button(
+                      link=`/${prefixAdmin}/topics/change-status/inactive/${item.id}` 
                       class="badge badge-success"
-                    ) Hoạt động
+                      button-change-status
+                      ) Hoạt động
                   else
-                    a(
-                      href="javascript:;"
+                    button(
+                      link=`/${prefixAdmin}/topics/change-status/active/${item.id}` 
                       class="badge badge-danger"
-                    ) Dừng hoạt động
+                      button-change-status
+                      ) Dừng hoạt động
                 td
                   a(
                     class="btn btn-secondary btn-sm"
@@ -60,6 +62,5 @@ block main
                   ) Sửa
                   button(
                     class="btn btn-danger btn-sm ml-1"
-                    button-delete
-                    data-id=item.id
+                    button-delete=`/${prefixAdmin}/topics/delete/${item.id}`
                   ) Xóa

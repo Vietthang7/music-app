@@ -9,7 +9,7 @@ import { accountRoute } from "./account.route";
 import { requireAuth } from "../../middleware/admin/auth.middleware";
 import { roleRoute } from "./role.route";
 import { authRoute } from "./auth.route";
-
+import { usersRoute } from "./user.route";
 export const routesAdmin = (app: Express) => {
   const PATH = `/${systemConfig.prefixAdmin}`;
 
@@ -34,6 +34,9 @@ export const routesAdmin = (app: Express) => {
   app.use(`${PATH}/roles`,
     requireAuth,
     roleRoute);
+  app.use(`${PATH}/users`,
+    requireAuth,
+    usersRoute);
   app.use(`${PATH}/auth`,
     authRoute);
 }

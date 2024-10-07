@@ -57,6 +57,11 @@ export const loginPost = async (req: Request, res: Response) => {
     res.redirect("back");
     return;
   }
+  if (user.status == "inactive") {
+    req.flash("error", "Tài khoản đã dừng hoạt động!");
+    res.redirect("back");
+    return;
+  }
 
   if (md5(req.body.password) != user.password) {
     req.flash("error", "Sai mật khẩu");
@@ -139,7 +144,7 @@ export const resetPassword = async (req: Request, res: Response) => {
   });
 };
 // [PATCH] /user/password/reset
-export const resetPasswordPatch = async (req:Request, res: Response) => {
+export const resetPasswordPatch = async (req: Request, res: Response) => {
   try {
     if (req.body.password != req.body.confirmpassword) {
       req.flash("error", "Mật khẩu không khớp");
@@ -167,14 +172,19 @@ export const forgotPassword = async (req: Request, res: Response) => {
   });
 };
 //[POST] /user/password/forgot
-export const forgotPasswordPost = async (req:Request, res:Response) => {
+export const forgotPasswordPost = async (req: Request, res: Response) => {
   const email: string = req.body.email;
   const user = await User.findOne({
     email: email,
-    deleted: false
+    deleted: false,
   });
   if (!user) {
     req.flash("error", "Email không tồn tại trong hệ thống!");
+    res.redirect("back");
+    return;
+  }
+  if (user["status"] == "inactive") {
+    req.flash("error", "Tài khoản đã dừng hoạt động!");
     res.redirect("back");
     return;
   }

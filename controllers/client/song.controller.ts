@@ -4,7 +4,7 @@ import Topic from "../../models/topic.model";
 import Song from "../../models/song.model";
 import Singer from "../../models/singer.model";
 import FavoriteSong from "../../models/favorite-song.model";
-import { title } from "process";
+import moment from "moment";
 // [GET] /songs/:slugTopic
 export const list = async (req: Request, res: Response) => {
   const slugTopic: string = req.params.slugTopic;
@@ -17,14 +17,23 @@ export const list = async (req: Request, res: Response) => {
     topicId: topic.id,
     deleted: false,
     status: "active"
-  }).select("title avatar singerId like slug");
+  });
 
 
   for (const item of songs) {
     const singerInfo = await Singer.findOne({
       _id: item.singerId
     }).select("fullName");
-    item["singerFullName"] = singerInfo["fullName"];
+    if (singerInfo) {
+      item["singerFullName"] = singerInfo["fullName"];
+    } else {
+      item["singerFullName"] = "Chưa có thông tin";
+    }
+    if (item["createdAt"]) {
+      const formattedDate = moment(item["createdAt"]).format("DD/MM/YY HH:mm:ss");
+      // Bạn có thể tạo một thuộc tính mới để lưu trữ ngày đã được định dạng  
+      item["formattedCreatedAt"] = formattedDate; // Lưu ngày đã định dạng vào một thuộc tính mới  
+    }
   }
   res.render("client/pages/songs/list", {
     pageTitle: topic.title,
@@ -39,6 +48,11 @@ export const detail = async (req: Request, res: Response) => {
     status: "active",
     deleted: false
   });
+  if (song["createdAt"]) {
+    const formattedDate = moment(song["createdAt"]).format("DD/MM/YY HH:mm:ss");
+    // Bạn có thể tạo một thuộc tính mới để lưu trữ ngày đã được định dạng  
+    song["formattedCreatedAt"] = formattedDate; // Lưu ngày đã định dạng vào một thuộc tính mới  
+  }
   const singer = await Singer.findOne({
     _id: song.singerId
   }).select("fullName")
@@ -46,13 +60,18 @@ export const detail = async (req: Request, res: Response) => {
   const topic = await Topic.findOne({
     _id: song.topicId
   }).select("title");
-  const existSongInFavorite = await FavoriteSong.findOne({
-    // userId: res.locals.user.id,
-    songId: song.id
-  });
+  const tokenUser = req.cookies.tokenUser;
+  if (tokenUser) {
+    const existSongInFavorite = await FavoriteSong.findOne({
+      userId: res.locals.user.id,
+      songId: song.id
+    });
 
-  if (existSongInFavorite) {
-    song["isFavorite"] = true;
+    if (existSongInFavorite) {
+      song["isFavorite"] = true;
+    } else {
+      song["isFavorite"] = false;
+    }
   }
   res.render("client/pages/songs/detail", {
     pageTitle: "Chi tiết bài hát",
@@ -63,71 +82,103 @@ export const detail = async (req: Request, res: Response) => {
 }
 // [PATCH] /songs/like
 export const like = async (req: Request, res: Response) => {
-  const { id, type } = req.body;
-  const song = await Song.findOne({
-    _id: id,
-    status: "active",
-    deleted: false
-  })
-  let updateLike = song.like;
-  if (type == "like") {
-    updateLike = updateLike + 1;
-  } else if (type == "dislike") {
-    updateLike = updateLike - 1;
+  const tokenUser = req.cookies.tokenUser;
+  if (!tokenUser) {
+    return res.status(401).json({
+      code: 401,
+      message: "Vui lòng đăng nhập"
+    });
+  } else {
+    try {
+      const { id, type } = req.body;
+      const song = await Song.findOne({
+        _id: id,
+        status: "active",
+        deleted: false
+      })
+      let updateLike = song.like;
+      if (type == "like") {
+        updateLike = updateLike + 1;
+      } else if (type == "dislike") {
+        updateLike = updateLike - 1;
+      }
+      await Song.updateOne({
+        _id: id,
+        status: "active",
+        deleted: false
+      }, {
+        like: updateLike
+      });
+      res.json({
+        code: 200,
+        updateLike: updateLike,
+        message: " Cập nhật thành công!"
+      });
+    } catch (error) {
+      res.redirect("/");
+    }
   }
-  await Song.updateOne({
-    _id: id,
-    status: "active",
-    deleted: false
-  }, {
-    like: updateLike
-  });
-  res.json({
-    code: 200,
-    updateLike: updateLike,
-    message: " Cập nhật thành công!"
-  });
+
 };
 // [PATCH] /songs/favoritePatch
 export const favoritePatch = async (req: Request, res: Response) => {
-  const { id } = req.body;
-  const data = {
-    // userId: res.locals.user.id,
-    songId: id
-  }
-  const existSongInFavorite = await FavoriteSong.findOne(data);
-  let status = "";
-  if (existSongInFavorite) {
-    await FavoriteSong.deleteOne(data);
+  const tokenUser = req.cookies.tokenUser;
+  if (!tokenUser) {
+    return res.status(401).json({
+      code: 401,
+      message: "Vui lòng đăng nhập"
+    });
   } else {
-    const record = new FavoriteSong(data);
-    await record.save();
-    status = "add";
+    try {
+      const { id } = req.body;
+      const data = {
+        userId: res.locals.user.id,
+        songId: id
+      }
+      const existSongInFavorite = await FavoriteSong.findOne(data);
+      let status = "";
+      if (existSongInFavorite) {
+        await FavoriteSong.deleteOne(data);
+      } else {
+        const record = new FavoriteSong(data);
+        await record.save();
+        status = "add";
+      }
+      res.json({
+        code: 200,
+        status: status
+      });
+    } catch (error) {
+      res.redirect("/");
+    }
   }
-  res.json({
-    code: 200,
-    status: status
-  });
 };
 // [GET] /songs/favorite
 export const favorite = async (req: Request, res: Response) => {
-  const songs = await FavoriteSong.find({
-    // userId: res.locals.user.id
-  });
-  for (const song of songs) {
-    const infoSong = await Song.findOne({
-      _id: song.songId
-    }).select("title avatar singerId slug");
-    const infoSinger = await Singer.findOne({
-      _id: infoSong.singerId
-    }).select("fullName");
-    song["infoSong"] = infoSong;
-    song["infoSinger"] = infoSinger;
+  const tokenUser = req.cookies.tokenUser;
+  if (!tokenUser) {
+    req.flash("error", "Bạn chưa đăng nhập");
+    res.redirect("back");
+  } else {
+    const songs = await FavoriteSong.find({
+      userId: res.locals.user.id
+    });
+    for (const song of songs) {
+      const infoSong = await Song.findOne({
+        _id: song.songId
+      }).select("title avatar singerId slug");
+      const infoSinger = await Singer.findOne({
+        _id: infoSong.singerId
+      }).select("fullName");
+      song["infoSong"] = infoSong;
+      song["infoSinger"] = infoSinger;
+    }
+    res.render("client/pages/songs/favorite", {
+      pageTitle: "Bài hát yêu thích",
+      songs: songs
+    });
   }
-  res.render("client/pages/songs/favorite", {
-    pageTitle: "Bài hát yêu thích",
-    songs: songs
-  });
+
 };
 // [GET] /songs/search/:type
 export const search = async (req: Request, res: Response) => {
