@@ -19,12 +19,12 @@ block main
               <i class="fa-solid fa-headphones mr-1"></i> 
               <span class="inner-number mr-1">#{song.listen}</span>
               | Lượt nghe
-            div(class="inner-action inner-like" button-like=song.id)
+            div(class=("inner-action inner-like " + (song.isLike == true ? "active" : "")) button-like=song.id)
               <i class="fa-regular fa-thumbs-up mr-1"></i> 
               <span class="inner-number mr-1">#{song.like}</span>
               | thích
             div(
-              class=("inner-action inner-heart" + (song.isFavorite == true ? "active" : ""))
+              class=("inner-action inner-heart " + (song.isFavorite == true ? "active" : ""))
               button-favorite=song.id
             )
               <i class="fa-regular fa-heart"></i> Bài hát yêu thích

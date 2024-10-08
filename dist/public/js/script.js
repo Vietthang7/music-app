@@ -64,16 +64,11 @@ const buttonLike = document.querySelector("[button-like]");
 if (buttonLike) {
   buttonLike.addEventListener("click", () => {
     const id = buttonLike.getAttribute("button-like");
+    const type = buttonLike.classList.contains("active") ? "dislike" : "like";
     const data = {
-      id: id
+      id: id,
+      type: type
     };
-    if (buttonLike.classList.contains("active")) {
-      buttonLike.classList.remove("active");
-      data.type = "dislike";
-    } else {
-      buttonLike.classList.add("active");
-      data.type = "like";
-    }
     fetch("/songs/like", {
       method: "PATCH",
       headers: {
@@ -81,13 +76,36 @@ if (buttonLike) {
       },
       body: JSON.stringify(data)
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          // Nếu phản hồi không thành công, ném lỗi  
+
+          return res.json().then(data => {
+            throw new Error(data.message); // Ném ra thông báo lỗi  
+          });
+        }
+        return res.json();
+      })
       .then(data => {
         if (data.code == 200) {
+          if (data.status == "add") {
+            buttonLike.classList.add("active");
+          } else {
+            buttonLike.classList.remove("active");
+          }
           const innerNumber = buttonLike.querySelector(".inner-number");
           innerNumber.innerHTML = data.updateLike;
         }
       })
+      .catch(error => {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: error.message,
+          showConfirmButton: false,
+          timer: 1000
+        });
+      });
   })
 
 }
@@ -108,7 +126,16 @@ if (listbuttonFavorite.length > 0) {
           id: id
         })
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            // Nếu phản hồi không thành công, ném lỗi  
+
+            return res.json().then(data => {
+              throw new Error(data.message); // Ném ra thông báo lỗi  
+            });
+          }
+          return res.json();
+        })
         .then(data => {
           if (data.code == 200) {
             if (data.status == "add") {
@@ -118,6 +145,15 @@ if (listbuttonFavorite.length > 0) {
             }
           }
         })
+        .catch(error => {
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: error.message,
+            showConfirmButton: false,
+            timer: 700
+          });
+        });
     })
   })
 }
@@ -205,3 +241,31 @@ if (togglePasswordVisibilityConfirm && confirmPasswordInput) {
   });
 }
 //  End Lấy các phần tử liên quan đến việc hiện/ẩn mật khẩu
+
+// show-alert
+const showAlert = document.querySelector("[show-alert]");
+
+if (showAlert) {
+  console.log("chay vao day");
+  let time = showAlert.getAttribute("show-alert") || 3000;
+  console.log(time);
+  time = parseInt(time);
+  setTimeout(() => {
+    showAlert.classList.add("hidden");
+  }, time);
+}
+// End show-alert
+//Upload Image
+const uploadImage = document.querySelector("[upload-image]");
+if (uploadImage) {
+  const uploadImageInput = uploadImage.querySelector("[upload-image-input]");
+  const uploadImagePreview = uploadImage.querySelector("[upload-image-preview]");
+
+  uploadImageInput.addEventListener("change", () => {
+    const file = uploadImageInput.files[0];
+    if (file) {
+      uploadImagePreview.src = URL.createObjectURL(file);
+    }
+  })
+}
+// End Upload Image

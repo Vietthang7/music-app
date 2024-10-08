@@ -8,11 +8,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.index = void 0;
+const song_model_1 = __importDefault(require("../../models/song.model"));
+const singer_model_1 = __importDefault(require("../../models/singer.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const listSongs = yield song_model_1.default.find({
+        deleted: false,
+        status: "active"
+    })
+        .select("title avatar singerId topicId listen like")
+        .limit(30);
+    const sortedSongs = listSongs.sort((a, b) => b.listen - a.listen);
+    for (const song of sortedSongs) {
+        const singerInfo = yield singer_model_1.default.findOne({
+            _id: song.singerId
+        });
+        song["singerFullName"] = singerInfo["fullName"];
+    }
     res.render("client/pages/home/index", {
-        pageTitle: "Trang chủ"
+        pageTitle: "Top BXH",
+        songs: sortedSongs
     });
 });
 exports.index = index;

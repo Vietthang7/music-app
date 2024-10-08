@@ -32,6 +32,8 @@ const multer_1 = __importDefault(require("multer"));
 const router = express_1.default.Router();
 const controller = __importStar(require("../../controllers/admin/song.controller"));
 const uploadCloud = __importStar(require("../../middleware/admin/uploadCloud.middleware"));
+const song_validate_1 = require("../../validates/admin/song.validate");
+const song_validate_2 = require("../../validates/admin/song.validate");
 const upload = (0, multer_1.default)();
 router.get("/", controller.index);
 router.get("/create", controller.create);
@@ -44,7 +46,7 @@ router.post("/create", upload.fields([
         name: "audio",
         maxCount: 1
     }
-]), uploadCloud.uploadFields, controller.createPost);
+]), uploadCloud.uploadFields, song_validate_1.createSong, controller.createPost);
 router.get("/edit/:id", controller.edit);
 router.patch("/edit/:id", upload.fields([
     {
@@ -55,5 +57,8 @@ router.patch("/edit/:id", upload.fields([
         name: "audio",
         maxCount: 1
     }
-]), uploadCloud.uploadFields, controller.editPatch);
+]), uploadCloud.uploadFields, song_validate_2.editSong, controller.editPatch);
+router.get("/detail/:id", controller.detail);
+router.patch("/delete/:id", controller.deleteSong);
+router.patch("/change-status/:statusChange/:id", controller.changeStatus);
 exports.songRoute = router;

@@ -4,6 +4,7 @@ import Topic from "../../models/topic.model";
 import Song from "../../models/song.model";
 import Singer from "../../models/singer.model";
 import FavoriteSong from "../../models/favorite-song.model";
+import LikeSong from "../../models/like.model";
 import moment from "moment";
 // [GET] /songs/:slugTopic
 export const list = async (req: Request, res: Response) => {
@@ -72,6 +73,16 @@ export const detail = async (req: Request, res: Response) => {
     } else {
       song["isFavorite"] = false;
     }
+    const existSongInLike = await LikeSong.findOne({
+      userId: res.locals.user.id,
+      songId: song.id
+    });
+
+    if (existSongInLike) {
+      song["isLike"] = true;
+    } else {
+      song["isLike"] = false;
+    }
   }
   res.render("client/pages/songs/detail", {
     pageTitle: "Chi tiết bài hát",
@@ -95,7 +106,20 @@ export const like = async (req: Request, res: Response) => {
         _id: id,
         status: "active",
         deleted: false
-      })
+      });
+      const data = {
+        userId: res.locals.user.id,
+        songId: id
+      };
+      let status = "";
+      const songLike = await LikeSong.findOne(data);
+      if (!songLike && type == "like") {
+        const record = new LikeSong(data);
+        await record.save();
+        status = "add";
+      } else if (songLike && type == "dislike") {
+        await LikeSong.deleteOne(data);
+      }
       let updateLike = song.like;
       if (type == "like") {
         updateLike = updateLike + 1;
@@ -112,7 +136,8 @@ export const like = async (req: Request, res: Response) => {
       res.json({
         code: 200,
         updateLike: updateLike,
-        message: " Cập nhật thành công!"
+        message: " Cập nhật thành công!",
+        status: status
       });
     } catch (error) {
       res.redirect("/");
@@ -247,22 +272,26 @@ export const search = async (req: Request, res: Response) => {
 
 // [GET] /songs/listen/:id
 export const listen = async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const song = await Song.findOne({
-    _id: id,
-    status: "active",
-    deleted: false
-  });
-  const updateListen = song.listen + 1;
-  await Song.updateOne({
-    _id: id,
-    status: "active",
-    deleted: false
-  }, {
-    listen: updateListen
-  });
-  res.json({
-    code: 200,
-    listen: updateListen
-  });
+  try {
+    const id = req.params.id;
+    const song = await Song.findOne({
+      _id: id,
+      status: "active",
+      deleted: false
+    });
+    const updateListen = song.listen + 1;
+    await Song.updateOne({
+      _id: id,
+      status: "active",
+      deleted: false
+    }, {
+      listen: updateListen,
+    });
+    res.json({
+      code: 200,
+      listen: updateListen
+    });
+  } catch (error) {
+    res.redirect("/topics");
+  }
 };

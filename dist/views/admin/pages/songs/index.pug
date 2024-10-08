@@ -1,65 +1,75 @@
 extends ../../layouts/default.pug
 block main
-  h1(class="mb-4") #{pageTitle}
-  .card.mb-3
-      .card-header Danh sách
-      .card-body
-        .row
-          .col-8
-            
-          .col-4.text-right
-            a(
-              href=`/${prefixAdmin}/songs/create`
-              class="btn btn-outline-success"
-            ) + Thêm mới
-        table(
-          class="table table-hover table-sm"
-        )
-          thead
-            tr
-              th STT
-              th Hình ảnh
-              th Tiêu đề
-              //- th Ca sĩ
-              //- th Chủ đề
-              th Trạng thái
-              th Hành động
-          tbody
-            each item, index in songs
-              tr 
-                td #{index+1}
-                td
-                  img(
-                    src=item.avatar
-                    alt=item.title
-                    width="80px"
-                    height="auto"
-                  )
-                td #{item.title}
-                //- td Dữ liệu ca sĩ
-                //- td Dữ liệu chủ đề
-                td
-                  if (item.status === "active")
+  if(role.permissions.includes("songs_view"))
+    h1(class="mb-4") #{pageTitle}
+    .card.mb-3
+        .card-header Danh sách
+        .card-body
+          .row
+            .col-8
+              
+            .col-4.text-right
+              a(
+                href=`/${prefixAdmin}/songs/create`
+                class="btn btn-outline-success"
+              ) + Thêm mới
+          table(
+            class="table table-hover table-sm"
+          )
+            thead
+              tr
+                th STT
+                th Hình ảnh
+                th Tiêu đề
+                th Ca sĩ
+                th Chủ đề
+                th Trạng thái
+                th Tạo mới
+                th Cập nhật
+                th Hành động
+            tbody
+              each item, index in songs
+                tr 
+                  td #{index+1}
+                  td
+                    img(
+                      src=item.avatar
+                      alt=item.title
+                      width="80px"
+                      height="auto"
+                    )
+                  td #{item.title}
+                  td #{item.singerFullName}
+                  td #{item.topic}
+                  td
+                    if (item.status === "active")
+                      button(
+                        link=`/${prefixAdmin}/songs/change-status/inactive/${item.id}` 
+                        class="badge badge-success"
+                        button-change-status
+                        ) Hoạt động
+                    else
+                      button(
+                        link=`/${prefixAdmin}/songs/change-status/active/${item.id}` 
+                        class="badge badge-danger"
+                        button-change-status
+                        ) Dừng hoạt động
+                  td #{item.formattedCreatedAt}
+                  td 
+                    if item.formattedUpdatedAt !== item.formattedCreatedAt  
+                      | #{item.formattedUpdatedAt}  
+                    else  
+                      | Chưa sửa lần nào
+                  td
                     a(
-                      href="javascript:;"
-                      class="badge badge-success"
-                    ) Hoạt động
-                  else
+                      class="btn btn-secondary btn-sm"
+                      href=`/${prefixAdmin}/songs/detail/${item.id}`
+                    ) Chi tiết
                     a(
-                      href="javascript:;"
-                      class="badge badge-danger"
-                    ) Dừng hoạt động
-                td
-                  a(
-                    class="btn btn-secondary btn-sm"
-                    href=`/${prefixAdmin}/songs/detail/${item.id}`
-                  ) Chi tiết
-                  a(
-                    class="btn btn-warning btn-sm ml-1"
-                    href=`/${prefixAdmin}/songs/edit/${item.id}`
-                  ) Sửa
-                  button(
-                    class="btn btn-danger btn-sm ml-1"
-                    button-delete
-                    data-id=item.id
-                  ) Xóa
+                      class="btn btn-warning btn-sm ml-1"
+                      href=`/${prefixAdmin}/songs/edit/${item.id}`
+                    ) Sửa
+                    button(
+                      class="btn btn-danger btn-sm ml-1"
+                      button-delete=`/${prefixAdmin}/songs/delete/${item.id}`
+                    ) Xóa

@@ -11,7 +11,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@types/connect-flash": "^0.0.40",
     "body-parser": "^1.20.3",
     "cloudinary": "^2.5.0",
     "connect-flash": "^0.1.1",

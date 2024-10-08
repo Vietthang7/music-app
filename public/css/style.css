@@ -76,6 +76,15 @@ body {
   border-radius: 5px;
 }
 
+.song-item .inner-rank {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #da8d00;
+  font-size: 25px;
+}
+
 .song-item .inner-image {
   width: 115px;
   aspect-ratio: 1/1;

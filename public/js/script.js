@@ -64,8 +64,10 @@ const buttonLike = document.querySelector("[button-like]");
 if (buttonLike) {
   buttonLike.addEventListener("click", () => {
     const id = buttonLike.getAttribute("button-like");
+    const type = buttonLike.classList.contains("active") ? "dislike" : "like";
     const data = {
-      id: id
+      id: id,
+      type: type
     };
     fetch("/songs/like", {
       method: "PATCH",
@@ -86,12 +88,10 @@ if (buttonLike) {
       })
       .then(data => {
         if (data.code == 200) {
-          if (buttonLike.classList.contains("active")) {
-            buttonLike.classList.remove("active");
-            data.type = "dislike";
-          } else {
+          if (data.status == "add") {
             buttonLike.classList.add("active");
-            data.type = "like";
+          } else {
+            buttonLike.classList.remove("active");
           }
           const innerNumber = buttonLike.querySelector(".inner-number");
           innerNumber.innerHTML = data.updateLike;

@@ -104,31 +104,189 @@ export const create = async (req: Request, res: Response) => {
 // [POST] /admin/accounts/create
 export const createPost = async (req: Request, res: Response) => {
   if (res.locals.role.permissions.includes("accounts_create")) {
-  const existAccountTrash = await Account.findOne({
-    email: req.body.email,
-    deleted: true
-  })
-  if (existAccountTrash) {
-    req.flash("error", "Tài khoản đã tồn tại và nằm trong thùng rác");
-    res.redirect("back");
-    return;
-  }
-  const existAccount = await Account.findOne({
-    email: req.body.email,
-    deleted: false
-  })
-  if (existAccount) {
-    req.flash("error", "Email đã tồn tại");
-    res.redirect("back");
-    return;
-  }
-  req.body.password = md5(req.body.password);
-  req.body.token = generateRandomString(30);
-  req.body.createdBy = res.locals.account.id;
-  const account = new Account(req.body);
-  await account.save();
-  res.redirect(`/${systemConfig.prefixAdmin}/accounts`);
+    const existAccountTrash = await Account.findOne({
+      email: req.body.email,
+      deleted: true
+    })
+    if (existAccountTrash) {
+      req.flash("error", "Tài khoản đã tồn tại và nằm trong thùng rác");
+      res.redirect("back");
+      return;
+    }
+    const existAccount = await Account.findOne({
+      email: req.body.email,
+      deleted: false
+    })
+    if (existAccount) {
+      req.flash("error", "Email đã tồn tại");
+      res.redirect("back");
+      return;
+    }
+    req.body.password = md5(req.body.password);
+    req.body.token = generateRandomString(30);
+    req.body.createdBy = res.locals.account.id;
+    const account = new Account(req.body);
+    await account.save();
+    res.redirect(`/${systemConfig.prefixAdmin}/accounts`);
   } else {
     res.send("403");
+  }
+}
+// [GET] /admin/accounts/edit/:id
+export const edit = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const account = await Account.findOne({
+      _id: id,
+      deleted: false
+    });
+    if (account) {
+      const roles = await Role.find({
+        deleted: false
+      }).select("title");
+
+      res.render("admin/pages/accounts/edit", {
+        pageTitle: "Tài khoản admin",
+        roles: roles,
+        account: account
+      });
+    } else {
+      res.redirect(`/${systemConfig.prefixAdmin}/accounts`);
+    }
+  } catch (error) {
+    res.redirect(`/${systemConfig.prefixAdmin}/accounts`);
+  }
+}
+// [PATCH] /admin/accounts/edit/:id
+export const editPatch = async (req: Request, res: Response) => {
+  if (res.locals.role.permissions.includes("accounts_edit")) {
+    try {
+      const id = req.params.id;
+
+      if (req.body.password == "") {
+        delete req.body.password;
+      } else {
+        req.body.password = md5(req.body.password);
+      }
+      req.body.updatedBy = res.locals.account.id;
+      await Account.updateOne({
+        _id: id,
+        deleted: false
+      }, req.body);
+      req.flash("success", "Cập nhật thành công!");
+    } catch (error) {
+      req.flash("error", "Id tài khoản không hợp lệ!");
+    }
+    res.redirect("back");
+  } else {
+    res.send("403");
+  }
+}
+// [GET] /admin/accounts/detail/:id
+export const detail = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const account = await Account.findOne({
+      _id: id,
+      deleted: false
+    });
+    if (account) {
+      const role = await Role.findOne({
+        _id: account.role_id,
+        deleted: false
+      });
+      res.render("admin/pages/accounts/detail", {
+        pageTitle: "Chi tiết tài khoản",
+        role: role,
+        account: account
+      });
+    } else {
+      res.redirect(`/${systemConfig.prefixAdmin}/accounts`);
+    }
+  } catch (error) {
+    res.redirect(`/${systemConfig.prefixAdmin}/accounts`);
+  }
+}
+// [PATCH] /admin/accounts/delete/:id
+export const deleteItem = async (req: Request, res: Response) => {
+  if (res.locals.role.permissions.includes("accounts_delete")) {
+    try {
+      const id = req.params.id;
+      await Account.deleteOne({
+        _id: id
+      });
+      req.flash('success', 'Đã xóa!');
+      res.json({
+        code: 200
+      })
+    } catch (error) {
+      res.redirect(`/${systemConfig.prefixAdmin}/accounts`);
+    }
+  } else {
+    res.send(`403`);
+  }
+}
+// [PATCH] /admin/accounts/change-status/:statusChange/:id
+export const changeStatus = async (req: Request, res: Response) => {
+  if (res.locals.role.permissions.includes("accounts_edit")) {
+    try {
+      const {
+        id,
+        statusChange
+      } = req.params;
+      await Account.updateOne({
+        _id: id
+
+      }, {
+        status: statusChange
+      });
+      req.flash('success', 'Cập nhật trạng thái thành công!');
+
+      res.json({
+        code: 200
+      });
+    } catch (error) {
+      res.redirect(`/${systemConfig.prefixAdmin}/accounts`);
+    }
+  }
+  else {
+    res.send(`403`);
+  }
+}
+// [PATCH] /admin/accounts/change-multi
+export const changeMulti = async (req: Request, res: Response) => {
+  if (res.locals.role.permissions.includes("accounts_edit")) {
+    try {
+      const {
+        status,
+        ids
+      } = req.body;
+      switch (status) {
+        case "active":
+        case "inactive":
+          await Account.updateMany({
+            _id: ids
+          }, {
+            status: status
+          });
+          break;
+        case "delete":
+          await Account.updateMany({
+            _id: ids
+          }, {
+            deleted: true
+
+          });
+        default:
+          break;
+      }
+      res.json({
+        code: 200
+      });
+    } catch (error) {
+      res.redirect(`/${systemConfig.prefixAdmin}/accounts`);
+    }
+  } else {
+    res.send(`403`);
   }
 }
