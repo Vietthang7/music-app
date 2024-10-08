@@ -7,7 +7,6 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const connect_flash_1 = __importDefault(require("connect-flash"));
 const express_flash_1 = __importDefault(require("express-flash"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const express_session_1 = __importDefault(require("express-session"));
@@ -28,7 +27,6 @@ app.use((0, express_session_1.default)({
     saveUninitialized: true,
     cookie: { maxAge: 60000 }
 }));
-app.use((0, connect_flash_1.default)());
 app.use((0, express_flash_1.default)());
 app.use((0, method_override_1.default)('_method'));
 app.use(body_parser_1.default.json());

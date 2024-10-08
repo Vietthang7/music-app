@@ -33,6 +33,7 @@
     "unidecode": "^1.1.0"
   },
   "devDependencies": {
+    "@types/connect-flash": "^0.0.40",
     "@types/express": "^4.17.21",
     "@types/node": "^22.5.5",
     "nodemon": "^3.1.4",

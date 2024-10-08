@@ -2,7 +2,7 @@ import express, { Express } from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 dotenv.config();
-import flash from 'connect-flash';
+// import flash from 'connect-flash';
 import flashjs from 'express-flash';  
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
@@ -24,7 +24,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: { maxAge: 60000 }
 }));
-app.use(flash());
+// app.use(flash());
 app.use(flashjs());
 app.use(methodOverride('_method'));
 app.use(bodyParser.json());
