@@ -6,7 +6,7 @@ export const index = async (req: Request, res: Response) => {
     deleted: false,
     status: "active"
   })
-    .select("title avatar singerId topicId listen like")
+    .select("title avatar singerId topicId listen like slug")
     .limit(30);
   const sortedSongs = listSongs.sort((a, b) => b.listen - a.listen);
   for (const song of sortedSongs) {
