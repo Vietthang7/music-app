@@ -8,7 +8,14 @@ export const index = async (req: Request, res: Response) => {
   })
     .select("title avatar singerId topicId listen like slug")
     .limit(30);
-  const sortedSongs = listSongs.sort((a, b) => b.listen - a.listen);
+  const sortedSongs = listSongs.sort((a, b) => {
+    // So sánh lượt nghe  
+    if (b.listen !== a.listen) {
+      return b.listen - a.listen; // Sắp xếp theo lượt nghe giảm dần  
+    }
+    // Nếu lượt nghe bằng nhau, so sánh lượt like  
+    return b.like - a.like; // Sắp xếp theo lượt like giảm dần  
+  });
   for (const song of sortedSongs) {
     const singerInfo = await Singer.findOne({
       _id: song.singerId
