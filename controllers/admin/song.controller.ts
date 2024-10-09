@@ -159,7 +159,7 @@ export const deleteSong = async (req: Request, res: Response) => {
   }
 }
 // [PATCH] /admin/songs/change-status/:statusChange/:id
-export const changeStatus = async (req, res) => {
+export const changeStatus = async (req:Request, res:Response) => {
   if (res.locals.role.permissions.includes("songs_edit")) {
     try {
       const {

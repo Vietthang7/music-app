@@ -34,13 +34,6 @@ app.use(express_1.default.static(`${__dirname}/public`));
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
 app.locals.prefixAdmin = system_1.systemConfig.prefixAdmin;
-app.use((req, res, next) => {
-    res.locals.messages = {
-        success: req.flash('success'),
-        error: req.flash('error')
-    };
-    next();
-});
 app.use('/tinymce', express_1.default.static(path_1.default.join(__dirname, 'node_modules', 'tinymce')));
 (0, index_route_1.routesAdmin)(app);
 (0, index_route_2.routesClient)(app);

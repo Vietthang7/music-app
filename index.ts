@@ -34,13 +34,13 @@ app.set("view engine", "pug");
 
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
 // Middlewares   
-app.use((req, res, next) => {
-  res.locals.messages = {
-    success: req.flash('success'),
-    error: req.flash('error')
-  };
-  next();
-});
+// app.use((req, res, next) => {
+//   res.locals.messages = {
+//     success: req.flash('success'),
+//     error: req.flash('error')
+//   };
+//   next();
+// });
 // Static files for TinyMCE  
 app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
 
