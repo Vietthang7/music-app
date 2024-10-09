@@ -1,9 +1,9 @@
-import express, { Express } from "express";
+import express, { Express, Request, Response } from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 dotenv.config();
 // import flash from 'connect-flash';
-import flashjs from 'express-flash';  
+import flashjs from 'express-flash';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import methodOverride from 'method-override';
@@ -47,7 +47,13 @@ app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce
 // Routes  
 routesAdmin(app);
 routesClient(app);
-
+//404
+app.get("*", (req: Request, res: Response) => {
+  res.render("client/pages/errors/404", {
+    pageTitle: "404 Not Found"
+  });
+});
+// End 404
 // Start server  
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
