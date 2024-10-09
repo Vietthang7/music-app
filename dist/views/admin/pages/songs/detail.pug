@@ -1,0 +1,33 @@
+extends ../../layouts/default.pug
+
+block main
+  if (song.title)
+    h4(class="mb-4") #{song.title}
+  if (topic.title)
+    h5(class="mb-4") #{topic.title}
+
+  if (song.avatar)
+    h5 Avatar
+    div(class="mb-4")
+      img(
+        src=song.avatar
+        style="width: 100px"
+      )
+  if (song.audio)
+    h5 Audio
+    div(class="mb-4") 
+      audio(controls upload-audio-play) 
+        source(src=song.audio)
+  if (song.lyrics)
+    h5 Lời bài hát:
+    div(class="mb-4 detail-lyrics") #{song.lyrics}
+  if (song.status)
+    div(class="mb-4")
+      span Trạng thái:
+      if (song.status === "active")
+        span(class="badge badge-success") Hoạt động
+      else
+        span(class="badge badge-danger") Dừng hoạt động
+
+  if (song.description)
+    div(class="mb-4") Mô tả:!{song.description}
