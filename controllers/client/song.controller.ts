@@ -62,7 +62,7 @@ export const detail = async (req: Request, res: Response) => {
     _id: song.topicId
   }).select("title");
   const tokenUser = req.cookies.tokenUser;
-  if (tokenUser) {
+  if (tokenUser && res.locals.user && res.locals.user.id) {
     const existSongInFavorite = await FavoriteSong.findOne({
       userId: res.locals.user.id,
       songId: song.id
@@ -94,12 +94,7 @@ export const detail = async (req: Request, res: Response) => {
 // [PATCH] /songs/like
 export const like = async (req: Request, res: Response) => {
   const tokenUser = req.cookies.tokenUser;
-  if (!tokenUser) {
-    return res.status(401).json({
-      code: 401,
-      message: "Vui lòng đăng nhập"
-    });
-  } else {
+  if (tokenUser && res.locals.user && res.locals.user.id) {
     try {
       const { id, type } = req.body;
       const song = await Song.findOne({
@@ -142,18 +137,18 @@ export const like = async (req: Request, res: Response) => {
     } catch (error) {
       res.redirect("/");
     }
+  } else {
+    return res.status(401).json({
+      code: 401,
+      message: "Vui lòng đăng nhập"
+    });
   }
 
 };
 // [PATCH] /songs/favoritePatch
 export const favoritePatch = async (req: Request, res: Response) => {
   const tokenUser = req.cookies.tokenUser;
-  if (!tokenUser) {
-    return res.status(401).json({
-      code: 401,
-      message: "Vui lòng đăng nhập"
-    });
-  } else {
+  if (tokenUser && res.locals.user && res.locals.user.id) {
     try {
       const { id } = req.body;
       const data = {
@@ -176,15 +171,17 @@ export const favoritePatch = async (req: Request, res: Response) => {
     } catch (error) {
       res.redirect("/");
     }
+  } else {
+    return res.status(401).json({
+      code: 401,
+      message: "Vui lòng đăng nhập"
+    });
   }
 };
 // [GET] /songs/favorite
 export const favorite = async (req: Request, res: Response) => {
   const tokenUser = req.cookies.tokenUser;
-  if (!tokenUser) {
-    req.flash("error", "Bạn chưa đăng nhập");
-    res.redirect("back");
-  } else {
+  if (tokenUser && res.locals.user && res.locals.user.id) {
     const songs = await FavoriteSong.find({
       userId: res.locals.user.id
     });
@@ -202,6 +199,9 @@ export const favorite = async (req: Request, res: Response) => {
       pageTitle: "Bài hát yêu thích",
       songs: songs
     });
+  } else {
+    req.flash("error", "Bạn chưa đăng nhập");
+    res.redirect("back");
   }
 
 };

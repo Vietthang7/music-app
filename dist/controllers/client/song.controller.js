@@ -71,7 +71,7 @@ const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         _id: song.topicId
     }).select("title");
     const tokenUser = req.cookies.tokenUser;
-    if (tokenUser) {
+    if (tokenUser && res.locals.user && res.locals.user.id) {
         const existSongInFavorite = yield favorite_song_model_1.default.findOne({
             userId: res.locals.user.id,
             songId: song.id
@@ -103,13 +103,7 @@ const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.detail = detail;
 const like = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const tokenUser = req.cookies.tokenUser;
-    if (!tokenUser) {
-        return res.status(401).json({
-            code: 401,
-            message: "Vui lòng đăng nhập"
-        });
-    }
-    else {
+    if (tokenUser && res.locals.user && res.locals.user.id) {
         try {
             const { id, type } = req.body;
             const song = yield song_model_1.default.findOne({
@@ -156,17 +150,17 @@ const like = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.redirect("/");
         }
     }
-});
-exports.like = like;
-const favoritePatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const tokenUser = req.cookies.tokenUser;
-    if (!tokenUser) {
+    else {
         return res.status(401).json({
             code: 401,
             message: "Vui lòng đăng nhập"
         });
     }
-    else {
+});
+exports.like = like;
+const favoritePatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const tokenUser = req.cookies.tokenUser;
+    if (tokenUser && res.locals.user && res.locals.user.id) {
         try {
             const { id } = req.body;
             const data = {
@@ -192,15 +186,17 @@ const favoritePatch = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             res.redirect("/");
         }
     }
+    else {
+        return res.status(401).json({
+            code: 401,
+            message: "Vui lòng đăng nhập"
+        });
+    }
 });
 exports.favoritePatch = favoritePatch;
 const favorite = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const tokenUser = req.cookies.tokenUser;
-    if (!tokenUser) {
-        req.flash("error", "Bạn chưa đăng nhập");
-        res.redirect("back");
-    }
-    else {
+    if (tokenUser && res.locals.user && res.locals.user.id) {
         const songs = yield favorite_song_model_1.default.find({
             userId: res.locals.user.id
         });
@@ -218,6 +214,10 @@ const favorite = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             pageTitle: "Bài hát yêu thích",
             songs: songs
         });
+    }
+    else {
+        req.flash("error", "Bạn chưa đăng nhập");
+        res.redirect("back");
     }
 });
 exports.favorite = favorite;
