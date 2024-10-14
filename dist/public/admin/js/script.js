@@ -159,7 +159,6 @@ if (listButtonDelete.length > 0) {
   listButtonDelete.forEach(button => {
     button.addEventListener("click", () => {
       const link = button.getAttribute("button-delete");
-      console.log(link);
 
       fetch(link, {
         method: "PATCH"
@@ -327,3 +326,17 @@ if (inputcheckAll) {
   });
 }
 // End Check Item
+//Pagination
+const listButtonPagination = document.querySelectorAll("[button-pagination]");
+if (listButtonPagination.length > 0) {
+  let url = new URL(window.location.href);
+  listButtonPagination.forEach(button => {
+    button.addEventListener("click", () => {
+      const page = button.getAttribute("button-pagination");
+      url.searchParams.set("page", page);
+
+      window.location.href = url.href;
+    });
+  });
+}
+// End Pagination

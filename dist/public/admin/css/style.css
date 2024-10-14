@@ -32,6 +32,7 @@
   left: 150px;
   width: calc(100% - 180px);
 }
+
 /* End Body */
 /* Sider */
 .sider .inner-menu ul {
@@ -48,7 +49,7 @@
   text-decoration: none;
 }
 
-.sider .inner-menu ul li :hover { 
+.sider .inner-menu ul li :hover {
   background: rgb(173, 69, 31);
   color: black;
 }
@@ -90,6 +91,16 @@
   border-radius: 50%;
   cursor: pointer;
 }
+.show-alert {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  z-index: 999;
+}
+
+.show-alert.hidden {
+  display: none;
+}
 
 /* End Show Alert */
 /* Image Preview */
@@ -112,15 +123,3 @@
 .detail-lyrics {
   white-space: pre;
 }
-/* show-alert */
-.show-alert {
-  position: fixed;
-  top: 70px;
-  right: 20px;
-  z-index: 999;
-}
-
-.show-alert.hidden {
-  display: none;
-}
-/* End show-alert */

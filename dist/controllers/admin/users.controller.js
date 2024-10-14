@@ -269,6 +269,7 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                         deleted: true
                     });
                     req.flash('success', 'Đã chuyển vào thùng rác!');
+                    break;
                 default:
                     break;
             }

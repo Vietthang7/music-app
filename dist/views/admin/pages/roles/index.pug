@@ -9,6 +9,7 @@ block main
         .row
           .col-8
           .col-4.text-right
+            if(role.permissions.includes("roles_create"))
               a(
                 href=`/${prefixAdmin}/roles/create`
                 class="btn btn-outline-success"

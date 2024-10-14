@@ -266,6 +266,7 @@ export const changeMulti = async (req: Request, res: Response) => {
             deleted: true
           });
           req.flash('success', 'Đã chuyển vào thùng rác!');
+          break;
         default:
           break;
       }

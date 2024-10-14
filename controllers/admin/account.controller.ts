@@ -275,8 +275,8 @@ export const changeMulti = async (req: Request, res: Response) => {
             _id: ids
           }, {
             deleted: true
-
           });
+          break;
         default:
           break;
       }

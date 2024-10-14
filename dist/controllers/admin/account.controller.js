@@ -283,6 +283,7 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     }, {
                         deleted: true
                     });
+                    break;
                 default:
                     break;
             }
