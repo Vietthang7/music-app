@@ -10,7 +10,7 @@ npm install
 Để khởi chạy dự án, chạy:  
 npm start  
 Trang quản trị:  
-https://music-app-a8dg.onrender.com/admin/auth/login  
+https://music-app-sces.onrender.com/admin/auth/login  
 Tài khoản admin quản trị viên:  
 Email:  
 nguyenvietthang12092004@gmail.com  
