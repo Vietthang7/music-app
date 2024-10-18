@@ -2,7 +2,7 @@
 Đây là một dự án nghe nhạc trực tuyến  
 Code theo hướng Server Side Rendering  
 Sử dụng: PUG, CSS, Typescript, NodeJS, ExpressJS, MongoDB, Mongoose, NPM, GIT, GITHUB  
-Link dự án: https://music-app-a8dg.onrender.com
+Link dự án: https://music-app-sces.onrender.com
 ## Installation
 Để cài đặt dự án, hãy chạy các lệnh sau:  
 npm install
