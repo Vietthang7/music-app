@@ -51,6 +51,7 @@ export const createPost = async (req: Request, res: Response) => {
   } else {
     res.send(`403`);
   }
+  
 }
 
 // [GET] /admin/roles/permissions
