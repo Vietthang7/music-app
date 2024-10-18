@@ -21,11 +21,12 @@ Email:
 capiye5769@almaxen.com    
 Password:  
 qwerty12345@@  
-Tài khoản client (có thể đăng kí tài khoản):  
+Tài khoản client :  
 Email:  
 capiye5769@almaxen.com  
 Password:  
-qwerty12345
+qwerty12345  
+Có thể đăng kí tài khoản mới  
 ## Liên hệ
 Bạn có thể liên hệ qua email:  
 nguyenvietthang12092004@gmail.com
